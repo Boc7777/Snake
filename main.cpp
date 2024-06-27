@@ -4,12 +4,15 @@
 #include <conio.h>
 #include <utility> 
 
+
 using namespace std;
+
+
 
 //time
 int game_time;
 int old_game_time;
-int game_speed = 200;
+int game_speed = 100;
 
 //map 
 int map_x;
@@ -17,7 +20,7 @@ int map_y;
 vector<vector<string>> map;
 
 //game 
-bool game_Start = true;
+
 
 //Movement 
 int ascii_Duration;
@@ -35,7 +38,8 @@ int player_Y;
 int snake_lenght=1;
 int apple_X;
 int apple_Y;
-bool appleexist = false;
+bool apple_Exist = false;
+bool game_Start = true;
 int game_score = 0;
 
 vector<pair<int, int>> snake_Body;
@@ -53,7 +57,7 @@ void CreateMap() {
 	}
 
 	//start game time 
-	old_game_time = clock();
+	old_game_time = clock()/game_speed;
 
 }
 
@@ -94,7 +98,7 @@ void Build() {
 		cout << "\n";
 	}
 
-	cout << "SCORE: " << game_score << " | GAME TIME: "<< game_time/1000<<"\n";
+	cout << "SCORE: " << game_score << " | GAME TIME: "<< game_time/10<<"\n";
 
 	if (game_Start == false) {
 		cout << "GAME OVER";
@@ -122,6 +126,7 @@ void Input() {
 			player_Direction = BOTTOM;
 		}
 	}	
+
 }
 
 
@@ -196,8 +201,8 @@ void Triger() {
 		}
 	}
 	//action after eat apple 
-	if (player_X == apple_X and player_Y == apple_Y and appleexist == true) {
-		appleexist = false;
+	if (player_X == apple_X and player_Y == apple_Y and apple_Exist == true) {
+		apple_Exist = false;
 		game_score += 10;
 		snake_lenght += 1;
 	}
@@ -205,7 +210,8 @@ void Triger() {
 
 
 void Apple() {
-	while (!appleexist) {
+	while (!apple_Exist) {
+		srand(time(0));
 		apple_X = rand() % map_x;
 		apple_Y = rand() % map_y;
 		int suitablePlace = true;
@@ -217,7 +223,7 @@ void Apple() {
 
 		if (suitablePlace) {
 			map[apple_Y][apple_X] = "X";
-			appleexist = true;
+			apple_Exist = true;
 		}
 
 	}
@@ -230,13 +236,13 @@ int main() {
 	Start();
 
 	while (true) {
-		//caly czas
-		game_time = clock();
+		//all time 
+		game_time = clock()/game_speed;
 
 		Input();
 		
-		//wlacza sie co game_speed 
-		if (game_time == old_game_time + game_speed and game_Start == true) {
+		//intervals 
+		if (game_time != old_game_time and game_Start) {
 			old_game_time = game_time;
 
 			
@@ -246,5 +252,8 @@ int main() {
 			Build();
 		}
 	}
+
+
+
 	return 0;
 }
