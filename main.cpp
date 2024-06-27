@@ -6,10 +6,10 @@
 
 using namespace std;
 
-//czas
+//time
 int game_time;
 int old_game_time;
-int game_speed = 400;
+int game_speed = 200;
 
 //map 
 int map_x;
@@ -32,7 +32,11 @@ player_Direction_Options last_Move;
 //Gameplay
 int player_X;
 int player_Y;
-int snake_lenght =5;
+int snake_lenght=1;
+int apple_X;
+int apple_Y;
+bool appleexist = false;
+int game_score = 0;
 
 vector<pair<int, int>> snake_Body;
 
@@ -48,16 +52,18 @@ void CreateMap() {
 		row = {};
 	}
 
+	//start game time 
+	old_game_time = clock();
+
 }
 
 
 void Start()
 {
-	/*cout << "podaj x i y twojej plaszy: \n x:";
+	/*cout << "enter the x and yszy: \n x:";
 	cin >> map_x;
 	cout << " y:";
-	cin >> map_y;
-	cout << "nacisnij WSAD";*/
+	cin >> map_y;*/
 
 	map_x = 20;
 	map_y = 15;
@@ -72,14 +78,13 @@ void Start()
 void Build() {
 	system("CLS");
 
-	
+	//build snake tail
 	for (int i = 0; i < snake_Body.size() - 1; ++i) {
 		const auto& segment = snake_Body[i];
 		map[segment.first][segment.second] = "o";
 	}
 
-
-
+	//build map and score
 	for (int y = 0; y < map_y; y++) {
 		for (int x = 0; x < map_x;x++) {
 
@@ -89,21 +94,20 @@ void Build() {
 		cout << "\n";
 	}
 
+	cout << "SCORE: " << game_score << " | GAME TIME: "<< game_time/1000<<"\n";
 
-
-
-
+	if (game_Start == false) {
+		cout << "GAME OVER";
+	}
 	
+
 }
 
 
 void Input() {
 	if (_kbhit()){
 		//zapisuje sie czas interwalowy
-		old_game_time = clock();
-
-
-
+		
 		ascii_Duration = _getch();
 		if (ascii_Duration == 97 and player_Direction != RIGHT and last_Move!= RIGHT) {
 			player_Direction = LEFT;
@@ -182,25 +186,44 @@ void Movement(){
 
 }
 
+
 void Triger() {
+	//end game after collision with a snake tail   
 	for (int i = 0; i < snake_Body.size() - 1; ++i) {
 		const auto& segment = snake_Body[i];
 		if (player_X == segment.second && player_Y == segment.first) {
 			game_Start = false;
 		}
 	}
-
-	/*cout << player_X << " " << player_Y << "\n";
-
-	for (const auto& segment : snake_Body) {
-		cout << segment.second << " " << segment.first << "||";
-	}*/
+	//action after eat apple 
+	if (player_X == apple_X and player_Y == apple_Y and appleexist == true) {
+		appleexist = false;
+		game_score += 10;
+		snake_lenght += 1;
+	}
 }
 
 
 void Apple() {
-	cout << rand()%30;
+	while (!appleexist) {
+		apple_X = rand() % map_x;
+		apple_Y = rand() % map_y;
+		int suitablePlace = true;
+		for (auto segment : snake_Body) {
+			if (apple_X == segment.second and apple_Y == segment.first) {
+				suitablePlace = false;
+			}
+		}
+
+		if (suitablePlace) {
+			map[apple_Y][apple_X] = "X";
+			appleexist = true;
+		}
+
+	}
+
 }
+
 
 int main() {
 	
@@ -218,17 +241,10 @@ int main() {
 
 			
 			Movement();
-			
-			Build();
 			Apple();
 			Triger();
-			
+			Build();
 		}
-		if (game_Start == false) {
-			cout << "GAME OVER";
-		}
-		
 	}
-
 	return 0;
 }
