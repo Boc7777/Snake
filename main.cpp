@@ -4,6 +4,10 @@
 #include <conio.h>
 #include <utility> 
 
+#include <filesystem>
+namespace fs = std::filesystem;
+
+
 
 using namespace std;
 
@@ -18,8 +22,6 @@ int game_speed = 100;
 int map_x;
 int map_y;
 vector<vector<string>> map;
-
-//game 
 
 
 //Movement 
@@ -41,8 +43,35 @@ int apple_Y;
 bool apple_Exist = false;
 bool game_Start = true;
 int game_score = 0;
-
 vector<pair<int, int>> snake_Body;
+
+
+//file system
+vector<string> map_List;
+
+int Player_choose() {
+	int choose;
+	while (true) {
+		system("CLS");
+		cout << "custom_map - 1 \n" << "map - 2 \n" ;
+		cin >> choose;
+		if (choose == 1 || choose == 2) {
+			return choose;
+		}
+	}
+}
+
+
+void get_Map_List() {
+	string path = "./maps";
+
+	for (const auto& entry : fs::directory_iterator(path)) {
+		map_List.push_back(entry.path().string());
+	}
+}
+
+
+
 
 
 void CreateMap() {
@@ -64,18 +93,35 @@ void CreateMap() {
 
 void Start()
 {
-	/*cout << "enter the x and yszy: \n x:";
-	cin >> map_x;
-	cout << " y:";
-	cin >> map_y;*/
+	int decision = Player_choose();
 
-	map_x = 20;
-	map_y = 15;
+	if (decision == 1) {
+		system("CLS");
+		cout << "enter the x and yszy: \n x:";
+		cin >> map_x;
+		cout << " y:";
+		cin >> map_y;
 
-	player_X = map_x / 2;
-	player_Y = map_y / 2;
+		map_x = 20;
+		map_y = 15;
 
-	CreateMap();
+		player_X = map_x / 2;
+		player_Y = map_y / 2;
+
+		CreateMap();
+	}
+	else if (decision == 2) {
+
+		get_Map_List();
+
+		for (auto ele : map_List) {
+		cout << ele;
+	}
+	}
+	
+
+
+	
 }
 
 
@@ -245,15 +291,23 @@ int main() {
 		if (game_time != old_game_time and game_Start) {
 			old_game_time = game_time;
 
-			
 			Movement();
 			Apple();
 			Triger();
 			Build();
 		}
 	}
+	
 
 
 
-	return 0;
+	
+
+	
+	
+	
+
+
+
+
 }
