@@ -9,7 +9,7 @@ using namespace std;
 //czas
 int game_time;
 int old_game_time;
-int game_speed = 200;
+int game_speed = 400;
 
 //map 
 int map_x;
@@ -17,7 +17,7 @@ int map_y;
 vector<vector<string>> map;
 
 //game 
-bool game_Start = false;
+bool game_Start = true;
 
 //Movement 
 int ascii_Duration;
@@ -26,12 +26,13 @@ enum player_Direction_Options
 	LEFT,TOP,RIGHT,BOTTOM
 };
 player_Direction_Options player_Direction;
+player_Direction_Options last_Move;
 
 
 //Gameplay
 int player_X;
 int player_Y;
-int snake_lenght;
+int snake_lenght =5;
 
 vector<pair<int, int>> snake_Body;
 
@@ -71,6 +72,14 @@ void Start()
 void Build() {
 	system("CLS");
 
+	
+	for (int i = 0; i < snake_Body.size() - 1; ++i) {
+		const auto& segment = snake_Body[i];
+		map[segment.first][segment.second] = "o";
+	}
+
+
+
 	for (int y = 0; y < map_y; y++) {
 		for (int x = 0; x < map_x;x++) {
 
@@ -79,29 +88,33 @@ void Build() {
 		}
 		cout << "\n";
 	}
+
+
+
+
+
+	
 }
 
 
 void Input() {
 	if (_kbhit()){
-		//po pierwszym nacisnieciu gra sie zaczyna 
-		game_Start = true;
 		//zapisuje sie czas interwalowy
 		old_game_time = clock();
 
 
 
 		ascii_Duration = _getch();
-		if (ascii_Duration == 97 and player_Direction != RIGHT) {
+		if (ascii_Duration == 97 and player_Direction != RIGHT and last_Move!= RIGHT) {
 			player_Direction = LEFT;
 		}
-		else if (ascii_Duration == 119 and player_Direction !=BOTTOM ) {
+		else if (ascii_Duration == 119 and player_Direction !=BOTTOM and last_Move!=BOTTOM) {
 			player_Direction = TOP;
 		}
-		else if (ascii_Duration == 100 and player_Direction != LEFT) {
+		else if (ascii_Duration == 100 and player_Direction != LEFT and last_Move!= LEFT) {
 			player_Direction = RIGHT;
 		}
-		else if (ascii_Duration == 115 and player_Direction != TOP) {
+		else if (ascii_Duration == 115 and player_Direction != TOP and last_Move!= TOP) {
 			player_Direction = BOTTOM;
 		}
 	}	
@@ -109,6 +122,13 @@ void Input() {
 
 
 void Movement(){
+
+	//usuwanie ogona 
+	if (snake_Body.size() > snake_lenght) {
+		map[snake_Body[0].first][snake_Body[0].second] = ".";
+		snake_Body.erase(snake_Body.begin());
+	}
+
 
 	//przechodzenie przez sciany i chodzenie 
 	if(player_Direction == LEFT){
@@ -120,7 +140,8 @@ void Movement(){
 		}
 
 		map[player_Y][player_X] = "O";
-		/*snake_Body.push_back(make_pair(player_Y,player_X));*/
+		last_Move = LEFT;
+		snake_Body.push_back(make_pair(player_Y,player_X));
 	}
 
 	else if (player_Direction == TOP) {
@@ -131,6 +152,8 @@ void Movement(){
 			player_Y = map_y - 1;
 		}
 		map[player_Y][player_X] = "O";
+		last_Move = TOP;
+		snake_Body.push_back(make_pair(player_Y, player_X));
 	}
 
 	else if (player_Direction == RIGHT) {
@@ -141,6 +164,8 @@ void Movement(){
 			player_X = 0;
 		}
 		map[player_Y][player_X] = "O";
+		last_Move = RIGHT;
+		snake_Body.push_back(make_pair(player_Y, player_X));
 	}
 
 	else if (player_Direction == BOTTOM) {
@@ -151,10 +176,31 @@ void Movement(){
 			player_Y = 0;
 		}
 		map[player_Y][player_X] = "O";
+		last_Move = BOTTOM;
+		snake_Body.push_back(make_pair(player_Y, player_X));
 	}
 
 }
 
+void Triger() {
+	for (int i = 0; i < snake_Body.size() - 1; ++i) {
+		const auto& segment = snake_Body[i];
+		if (player_X == segment.second && player_Y == segment.first) {
+			game_Start = false;
+		}
+	}
+
+	/*cout << player_X << " " << player_Y << "\n";
+
+	for (const auto& segment : snake_Body) {
+		cout << segment.second << " " << segment.first << "||";
+	}*/
+}
+
+
+void Apple() {
+	cout << rand()%30;
+}
 
 int main() {
 	
@@ -170,9 +216,16 @@ int main() {
 		if (game_time == old_game_time + game_speed and game_Start == true) {
 			old_game_time = game_time;
 
-			Movement();
-			Build();
 			
+			Movement();
+			
+			Build();
+			Apple();
+			Triger();
+			
+		}
+		if (game_Start == false) {
+			cout << "GAME OVER";
 		}
 		
 	}
