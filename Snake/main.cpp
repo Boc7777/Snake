@@ -5,6 +5,8 @@
 #include <utility> 
 
 #include <filesystem>
+#include <fstream>
+#include <string>
 namespace fs = std::filesystem;
 
 
@@ -41,13 +43,18 @@ int snake_lenght=1;
 int apple_X;
 int apple_Y;
 bool apple_Exist = false;
-bool game_Start = true;
+bool game_Start;
+bool game_Over_flag;
 int game_score = 0;
 vector<pair<int, int>> snake_Body;
+vector<pair<int, int>> walls;
 
 
 //file system
 vector<string> map_List;
+string choosen_Map;
+
+
 
 int Player_choose() {
 	int choose;
@@ -64,14 +71,112 @@ int Player_choose() {
 
 void get_Map_List() {
 	string path = "./maps";
-
+	map_List = {};
 	for (const auto& entry : fs::directory_iterator(path)) {
 		map_List.push_back(entry.path().string());
 	}
 }
 
 
+void choose_Map() {
+	bool wybor = false;
 
+
+	while (!wybor) {
+		int i = 0;
+		int amount_of_maps = map_List.size();
+		int choose;
+		system("CLS");
+
+
+		cout << "wybierz mapke \n";
+		for (auto ele : map_List) {
+			cout << i << ": " << ele << "\n";
+			i += 1;
+		}
+		cin >> choose;
+
+		if (choose >= 0 && choose < amount_of_maps) {
+			system("CLS");
+			choosen_Map = map_List[choose];
+			wybor = true;
+		}
+
+		
+	}
+
+
+}
+
+
+void load_map() {
+
+	string row;
+	vector<string> row_to_push;
+	string znak;
+
+	ifstream loading_Map(choosen_Map);
+	
+	while ( getline(loading_Map, row) ){
+		
+		for (int i=0;i < row.size();i++) {
+			znak = row[i];
+			row_to_push.push_back(znak);
+		}
+		map.push_back(row_to_push);
+
+		row_to_push = {};
+	}
+	
+
+
+	loading_Map.close();
+}
+
+
+void validate_map_format() {
+	int validate_columns = map[0].size();
+	int counter_columns = 0;
+
+	bool columns_ok = true;
+
+
+	for (int y = 0; y < map.size(); y++) {
+		counter_columns = map[y].size();
+
+		if (counter_columns != validate_columns) {
+			columns_ok = false;
+		}
+	
+	}
+
+	if (columns_ok) {
+		map_x = validate_columns;
+		map_y = map.size();
+
+		player_X = map_x / 2;
+		player_Y = map_y / 2;
+
+		game_Start = true;
+	}
+	else {
+		system("CLS");
+		cout << "BAD MAP FORMAT";
+	}
+
+}
+
+
+void set_walls() {
+	for (int y = 0; y < map_y; y++) {
+		for (int x = 0; x < map_x;x++) {
+
+			if (map[y][x] == "M") {
+				walls.push_back(make_pair(y, x));
+			}
+		}
+	}
+}
 
 
 void CreateMap() {
@@ -95,32 +200,33 @@ void Start()
 {
 	int decision = Player_choose();
 
+	system("CLS");
+	cout << "choose your game speed (the lower the number, the faster the game): ";
+	cin >> game_speed;
+
+
 	if (decision == 1) {
 		system("CLS");
-		cout << "enter the x and yszy: \n x:";
+		cout << "enter the x and y: \n x:";
 		cin >> map_x;
 		cout << " y:";
 		cin >> map_y;
-
-		map_x = 20;
-		map_y = 15;
 
 		player_X = map_x / 2;
 		player_Y = map_y / 2;
 
 		CreateMap();
+		game_Start = true;
 	}
+	
 	else if (decision == 2) {
 
 		get_Map_List();
-
-		for (auto ele : map_List) {
-		cout << ele;
+		choose_Map();
+		load_map();
+		validate_map_format();
+		set_walls();
 	}
-	}
-	
-
-
 	
 }
 
@@ -144,7 +250,7 @@ void Build() {
 		cout << "\n";
 	}
 
-	cout << "SCORE: " << game_score << " | GAME TIME: "<< game_time/10<<"\n";
+	cout << "SCORE: " << game_score << "\n";
 
 	if (game_Start == false) {
 		cout << "GAME OVER";
@@ -244,6 +350,7 @@ void Triger() {
 		const auto& segment = snake_Body[i];
 		if (player_X == segment.second && player_Y == segment.first) {
 			game_Start = false;
+			game_Over_flag = true;
 		}
 	}
 	//action after eat apple 
@@ -251,6 +358,13 @@ void Triger() {
 		apple_Exist = false;
 		game_score += 10;
 		snake_lenght += 1;
+	}
+
+	for (auto w : walls) {
+		if (player_Y == w.first && player_X == w.second) {
+			game_Start = false;
+			game_Over_flag = true;
+		}
 	}
 }
 
@@ -261,7 +375,14 @@ void Apple() {
 		apple_X = rand() % map_x;
 		apple_Y = rand() % map_y;
 		int suitablePlace = true;
+
 		for (auto segment : snake_Body) {
+			if (apple_X == segment.second and apple_Y == segment.first) {
+				suitablePlace = false;
+			}
+		}
+
+		for (auto segment : walls) {
 			if (apple_X == segment.second and apple_Y == segment.first) {
 				suitablePlace = false;
 			}
@@ -275,6 +396,29 @@ void Apple() {
 	}
 
 }
+
+
+void game_Over() {
+	string cos;
+	cout << "\n type whatever to continue :)";
+	cin >> cos;
+
+	game_Over_flag == false;
+	snake_lenght = 1;
+	apple_Exist = false;
+	game_score = 0;
+
+	map = {};
+	snake_Body = {};
+	walls = {};
+
+
+
+	Start();
+}
+
+
+
 
 
 int main() {
@@ -295,6 +439,9 @@ int main() {
 			Apple();
 			Triger();
 			Build();
+		}
+		else if(game_Over_flag==true && game_Start == false){
+			game_Over();
 		}
 	}
 	

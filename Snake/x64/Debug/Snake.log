@@ -1,3 +1,8 @@
 ﻿  main.cpp
-C:\Users\48664\Desktop\Snake\Snake\main.cpp(260,13): warning C4244: "argument": konwersja z "time_t" do "unsigned int", możliwa utrata danych
-  Snake.vcxproj -> C:\Users\48664\Desktop\Snake\x64\Debug\Snake.exe
+C:\Users\48664\Desktop\Snake\Snake\Snake\main.cpp(87,22): warning C4267: "inicjowanie": konwersja z "size_t" do "int", możliwa utrata danych
+C:\Users\48664\Desktop\Snake\Snake\Snake\main.cpp(138,23): warning C4267: "inicjowanie": konwersja z "size_t" do "int", możliwa utrata danych
+C:\Users\48664\Desktop\Snake\Snake\Snake\main.cpp(145,32): warning C4267: "=": konwersja z "size_t" do "int", możliwa utrata danych
+C:\Users\48664\Desktop\Snake\Snake\Snake\main.cpp(155,19): warning C4267: "=": konwersja z "size_t" do "int", możliwa utrata danych
+C:\Users\48664\Desktop\Snake\Snake\Snake\main.cpp(374,13): warning C4244: "argument": konwersja z "time_t" do "unsigned int", możliwa utrata danych
+C:\Users\48664\Desktop\Snake\Snake\Snake\main.cpp(406,17): warning C4553: „==”: Wynik wyrażenia nie jest używany; czy chodziło Ci o „=”?
+  Snake.vcxproj -> C:\Users\48664\Desktop\Snake\Snake\x64\Debug\Snake.exe
