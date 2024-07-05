@@ -68,7 +68,7 @@ int Player_choose() {
 	}
 }
 
-
+//load txt files from maps dir 
 void get_Map_List() {
 	string path = "./maps";
 	map_List = {};
@@ -77,7 +77,7 @@ void get_Map_List() {
 	}
 }
 
-
+//player may choose which map he want to play 
 void choose_Map() {
 	bool wybor = false;
 
@@ -89,7 +89,7 @@ void choose_Map() {
 		system("CLS");
 
 
-		cout << "wybierz mapke \n";
+		cout << "select map \n";
 		for (auto ele : map_List) {
 			cout << i << ": " << ele << "\n";
 			i += 1;
@@ -133,7 +133,7 @@ void load_map() {
 	loading_Map.close();
 }
 
-
+//checking txt map file has a good format to load a map 
 void validate_map_format() {
 	int validate_columns = map[0].size();
 	int counter_columns = 0;
@@ -166,7 +166,7 @@ void validate_map_format() {
 
 }
 
-
+//upload all walls which are in map in to walls vector 
 void set_walls() {
 	for (int y = 0; y < map_y; y++) {
 		for (int x = 0; x < map_x;x++) {
@@ -201,7 +201,7 @@ void Start()
 	int decision = Player_choose();
 
 	system("CLS");
-	cout << "choose your game speed (the lower the number, the faster the game): ";
+	cout << "choose your game speed \nthe lower the number, the faster the game \npreferably choose more than 100 \n";
 	cin >> game_speed;
 
 
@@ -265,16 +265,16 @@ void Input() {
 		//zapisuje sie czas interwalowy
 		
 		ascii_Duration = _getch();
-		if (ascii_Duration == 97 and player_Direction != RIGHT and last_Move!= RIGHT) {
+		if (ascii_Duration == 97 && player_Direction != RIGHT && last_Move!= RIGHT) {
 			player_Direction = LEFT;
 		}
-		else if (ascii_Duration == 119 and player_Direction !=BOTTOM and last_Move!=BOTTOM) {
+		else if (ascii_Duration == 119 && player_Direction !=BOTTOM && last_Move!=BOTTOM) {
 			player_Direction = TOP;
 		}
-		else if (ascii_Duration == 100 and player_Direction != LEFT and last_Move!= LEFT) {
+		else if (ascii_Duration == 100 && player_Direction != LEFT && last_Move!= LEFT) {
 			player_Direction = RIGHT;
 		}
-		else if (ascii_Duration == 115 and player_Direction != TOP and last_Move!= TOP) {
+		else if (ascii_Duration == 115 && player_Direction != TOP && last_Move!= TOP) {
 			player_Direction = BOTTOM;
 		}
 	}	
@@ -354,7 +354,7 @@ void Triger() {
 		}
 	}
 	//action after eat apple 
-	if (player_X == apple_X and player_Y == apple_Y and apple_Exist == true) {
+	if (player_X == apple_X && player_Y == apple_Y && apple_Exist == true) {
 		apple_Exist = false;
 		game_score += 10;
 		snake_lenght += 1;
@@ -377,13 +377,13 @@ void Apple() {
 		int suitablePlace = true;
 
 		for (auto segment : snake_Body) {
-			if (apple_X == segment.second and apple_Y == segment.first) {
+			if (apple_X == segment.second && apple_Y == segment.first) {
 				suitablePlace = false;
 			}
 		}
 
 		for (auto segment : walls) {
-			if (apple_X == segment.second and apple_Y == segment.first) {
+			if (apple_X == segment.second && apple_Y == segment.first) {
 				suitablePlace = false;
 			}
 		}
@@ -432,7 +432,7 @@ int main() {
 		Input();
 		
 		//intervals 
-		if (game_time != old_game_time and game_Start) {
+		if (game_time != old_game_time && game_Start) {
 			old_game_time = game_time;
 
 			Movement();
