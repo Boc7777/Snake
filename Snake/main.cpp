@@ -55,7 +55,7 @@ vector<string> map_List;
 string choosen_Map;
 
 
-
+//player may choose custom map or load from txt file 
 int Player_choose() {
 	int choose;
 	while (true) {
@@ -284,14 +284,14 @@ void Input() {
 
 void Movement(){
 
-	//usuwanie ogona 
+	//deleting tail 
 	if (snake_Body.size() > snake_lenght) {
 		map[snake_Body[0].first][snake_Body[0].second] = ".";
 		snake_Body.erase(snake_Body.begin());
 	}
 
 
-	//przechodzenie przez sciany i chodzenie 
+	//walking through walls
 	if(player_Direction == LEFT){
 		if (player_X != 0) {
 			player_X -= 1;
